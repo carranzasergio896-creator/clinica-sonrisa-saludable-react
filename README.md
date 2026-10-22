@@ -1,16 +1,37 @@
-# React + Vite
+# Clínica Dental Sonrisa Saludable (React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplicación web para solicitar citas en la Clínica Dental Sonrisa Saludable, desarrollada con React y Vite como proyecto académico con metodología Scrum.
 
-Currently, two official plugins are available:
+Autor: Sergio Carranza
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Funcionalidades
 
-## React Compiler
+- Portada y catálogo de servicios.
+- Catálogo de dentistas con especialidad y horarios.
+- Solicitud de cita con validaciones (nombre, correo, teléfono, fecha y horario).
+- Horarios ocupados ocultos al elegir dentista y fecha.
+- Registro e inicio de sesión (simulación local).
+- Panel del paciente para consultar y cancelar citas.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Cómo ejecutar
 
-## Expanding the Oxlint configuration
+1. Instalar dependencias: `npm install`
+2. Iniciar el servidor de desarrollo: `npm run dev`
+3. Abrir `http://localhost:5173`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Estructura
+
+- `src/components/`: componentes de la interfaz (Header, Hero, Servicios, Dentistas, FormularioCita, Acceso, PanelPaciente, Contacto, Footer y horarios).
+- `src/utils/almacenamiento.js`: capa de persistencia local con localStorage, que funciona como sustituto provisional de la API.
+
+## Avance por sprint
+
+| Sprint | Fechas (2026) | Estado |
+|---|---|---|
+| Sprint 1 | 5 al 16 de octubre | Terminado |
+| Sprint 2 | 19 al 30 de octubre | En proceso |
+| Sprint 3 | 2 al 13 de noviembre | Planeado: API, administración de citas y seguridad |
+
+## Aviso
+
+Los datos se guardan solo en el navegador (localStorage) y las contraseñas no están cifradas. Usa únicamente datos ficticios. La API y la autenticación segura se desarrollarán en el Sprint 3.
