@@ -2,6 +2,7 @@ import { useState } from "react";
 import { HORARIOS } from "./horarios";
 import { dentistas } from "./Dentistas";
 import { horariosOcupados, guardarCita } from "../utils/almacenamiento";
+import { validarNombre, validarCorreo, validarTelefono } from "../utils/validaciones";
 
 const servicios = [
   "Limpieza dental",
@@ -28,8 +29,9 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
     fecha: "",
     horario: "",
   });
-  const [error, setError] = useState("");
+  const [errores, setErrores] = useState({});
   const [confirmacion, setConfirmacion] = useState("");
+  const [errorGeneral, setErrorGeneral] = useState("");
 
   const dentistaElegido = dentistas.find((d) => String(d.id) === formulario.dentistaId);
   const ocupados = dentistaElegido && formulario.fecha
@@ -39,6 +41,7 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
 
   function manejarCambio(evento) {
     const { name, value } = evento.target;
+    setErrores({ ...errores, [name]: "" });
     if (name === "dentistaId" || name === "fecha") {
       setFormulario({ ...formulario, [name]: value, horario: "" });
     } else {
@@ -46,28 +49,35 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
     }
   }
 
+  function validarFormulario() {
+    const nuevosErrores = {
+      nombre: validarNombre(formulario.nombre),
+      telefono: validarTelefono(formulario.telefono),
+      correo: validarCorreo(formulario.correo),
+    };
+    if (!formulario.dentistaId) {
+      nuevosErrores.dentistaId = "Selecciona un dentista.";
+    }
+    if (!formulario.servicio) {
+      nuevosErrores.servicio = "Selecciona un servicio.";
+    }
+    if (!formulario.fecha) {
+      nuevosErrores.fecha = "Elige una fecha.";
+    } else if (formulario.fecha < hoy) {
+      nuevosErrores.fecha = "No puedes seleccionar una fecha anterior al día actual.";
+    }
+    if (!formulario.horario) {
+      nuevosErrores.horario = "Elige un horario disponible.";
+    }
+    setErrores(nuevosErrores);
+    return Object.values(nuevosErrores).every((error) => error === "");
+  }
+
   function enviarFormulario(evento) {
     evento.preventDefault();
-    setError("");
+    setErrorGeneral("");
     setConfirmacion("");
-
-    const campos = ["nombre", "telefono", "correo", "dentistaId", "servicio", "fecha", "horario"];
-    if (campos.some((campo) => formulario[campo] === "")) {
-      setError("Completa todos los campos obligatorios.");
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formulario.correo)) {
-      setError("Escribe un correo electrónico válido.");
-      return;
-    }
-    if (!/^[0-9]{10}$/.test(formulario.telefono)) {
-      setError("El teléfono debe tener exactamente 10 números.");
-      return;
-    }
-    if (formulario.fecha < hoy) {
-      setError("No puedes seleccionar una fecha anterior al día actual.");
-      return;
-    }
+    if (!validarFormulario()) return;
 
     const resultado = guardarCita({
       ...formulario,
@@ -75,7 +85,7 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
       dentistaId: dentistaElegido.id,
     });
     if (!resultado.ok) {
-      setError(resultado.error);
+      setErrorGeneral(resultado.error);
       return;
     }
     const cita = resultado.cita;
@@ -91,6 +101,7 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
       fecha: "",
       horario: "",
     });
+    setErrores({});
   }
 
   return (
@@ -121,7 +132,10 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
                 placeholder="Escribe tu nombre"
                 value={formulario.nombre}
                 onChange={manejarCambio}
+                aria-invalid={Boolean(errores.nombre)}
+                className={errores.nombre ? "campo-invalido" : ""}
               />
+              {errores.nombre && <p className="error-campo">{errores.nombre}</p>}
             </div>
             <div>
               <label htmlFor="telefono">Teléfono</label>
@@ -133,7 +147,10 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
                 maxLength="10"
                 value={formulario.telefono}
                 onChange={manejarCambio}
+                aria-invalid={Boolean(errores.telefono)}
+                className={errores.telefono ? "campo-invalido" : ""}
               />
+              {errores.telefono && <p className="error-campo">{errores.telefono}</p>}
             </div>
           </div>
           <div className="fila-formulario">
@@ -146,7 +163,10 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
                 placeholder="correo@ejemplo.com"
                 value={formulario.correo}
                 onChange={manejarCambio}
+                aria-invalid={Boolean(errores.correo)}
+                className={errores.correo ? "campo-invalido" : ""}
               />
+              {errores.correo && <p className="error-campo">{errores.correo}</p>}
             </div>
             <div>
               <label htmlFor="dentistaId">Dentista</label>
@@ -155,6 +175,7 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
                 name="dentistaId"
                 value={formulario.dentistaId}
                 onChange={manejarCambio}
+                className={errores.dentistaId ? "campo-invalido" : ""}
               >
                 <option value="">Selecciona un dentista</option>
                 {dentistas.map((dentista) => (
@@ -163,6 +184,7 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
                   </option>
                 ))}
               </select>
+              {errores.dentistaId && <p className="error-campo">{errores.dentistaId}</p>}
             </div>
           </div>
           <div className="fila-formulario">
@@ -173,6 +195,7 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
                 name="servicio"
                 value={formulario.servicio}
                 onChange={manejarCambio}
+                className={errores.servicio ? "campo-invalido" : ""}
               >
                 <option value="">Selecciona un servicio</option>
                 {servicios.map((servicio) => (
@@ -181,6 +204,7 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
                   </option>
                 ))}
               </select>
+              {errores.servicio && <p className="error-campo">{errores.servicio}</p>}
             </div>
             <div>
               <label htmlFor="fecha">Fecha preferida</label>
@@ -191,7 +215,10 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
                 min={hoy}
                 value={formulario.fecha}
                 onChange={manejarCambio}
+                aria-invalid={Boolean(errores.fecha)}
+                className={errores.fecha ? "campo-invalido" : ""}
               />
+              {errores.fecha && <p className="error-campo">{errores.fecha}</p>}
             </div>
           </div>
           <label htmlFor="horario">Horario</label>
@@ -201,6 +228,7 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
             value={formulario.horario}
             onChange={manejarCambio}
             disabled={!dentistaElegido || !formulario.fecha}
+            className={errores.horario ? "campo-invalido" : ""}
           >
             <option value="">
               {!dentistaElegido || !formulario.fecha
@@ -213,7 +241,8 @@ export default function FormularioCita({ usuario, navegar, dentistaInicial }) {
               </option>
             ))}
           </select>
-          {error && <p className="mensaje error">{error}</p>}
+          {errores.horario && <p className="error-campo">{errores.horario}</p>}
+          {errorGeneral && <p className="mensaje error">{errorGeneral}</p>}
           {confirmacion && <p className="mensaje exito">{confirmacion}</p>}
           <button className="boton-enviar" type="submit">
             Enviar solicitud

@@ -1,47 +1,47 @@
 import { useState } from "react";
 import { registrarUsuario, iniciarSesion, guardarSesion } from "../utils/almacenamiento";
+import { validarNombre, validarCorreo, validarContrasena } from "../utils/validaciones";
 
 export default function Acceso({ alIniciar }) {
   const [modo, setModo] = useState("registro");
   const [formulario, setFormulario] = useState({ nombre: "", correo: "", contrasena: "" });
-  const [error, setError] = useState("");
+  const [errores, setErrores] = useState({});
+  const [errorGeneral, setErrorGeneral] = useState("");
 
   function manejarCambio(evento) {
     const { name, value } = evento.target;
+    setErrores({ ...errores, [name]: "" });
     setFormulario({ ...formulario, [name]: value });
+  }
+
+  function validarFormulario() {
+    const nuevosErrores = { correo: validarCorreo(formulario.correo) };
+    if (modo === "registro") {
+      nuevosErrores.nombre = validarNombre(formulario.nombre);
+      nuevosErrores.contrasena = validarContrasena(formulario.contrasena);
+    } else if (!formulario.contrasena) {
+      nuevosErrores.contrasena = "Escribe tu contraseña.";
+    }
+    setErrores(nuevosErrores);
+    return Object.values(nuevosErrores).every((error) => error === "");
   }
 
   function enviar(evento) {
     evento.preventDefault();
-    setError("");
+    setErrorGeneral("");
+    if (!validarFormulario()) return;
     if (modo === "registro") {
-      if (!formulario.nombre.trim()) {
-        setError("Escribe tu nombre.");
-        return;
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formulario.correo)) {
-        setError("Escribe un correo electrónico válido.");
-        return;
-      }
-      if (formulario.contrasena.length < 6) {
-        setError("La contraseña debe tener al menos 6 caracteres.");
-        return;
-      }
       const resultado = registrarUsuario(formulario);
       if (!resultado.ok) {
-        setError(resultado.error);
+        setErrorGeneral(resultado.error);
         return;
       }
       guardarSesion(resultado.usuario);
       alIniciar(resultado.usuario);
     } else {
-      if (!formulario.correo || !formulario.contrasena) {
-        setError("Completa correo y contraseña.");
-        return;
-      }
       const resultado = iniciarSesion(formulario.correo, formulario.contrasena);
       if (!resultado.ok) {
-        setError(resultado.error);
+        setErrorGeneral(resultado.error);
         return;
       }
       guardarSesion(resultado.usuario);
@@ -63,13 +63,13 @@ export default function Acceso({ alIniciar }) {
         <div className="pestanas">
           <button
             className={"pestana" + (modo === "registro" ? " activa" : "")}
-            onClick={() => { setModo("registro"); setError(""); }}
+            onClick={() => { setModo("registro"); setErrores({}); setErrorGeneral(""); }}
           >
             Registrarme
           </button>
           <button
             className={"pestana" + (modo === "inicio" ? " activa" : "")}
-            onClick={() => { setModo("inicio"); setError(""); }}
+            onClick={() => { setModo("inicio"); setErrores({}); setErrorGeneral(""); }}
           >
             Iniciar sesión
           </button>
@@ -85,7 +85,10 @@ export default function Acceso({ alIniciar }) {
                 placeholder="Escribe tu nombre"
                 value={formulario.nombre}
                 onChange={manejarCambio}
+                aria-invalid={Boolean(errores.nombre)}
+                className={errores.nombre ? "campo-invalido" : ""}
               />
+              {errores.nombre && <p className="error-campo">{errores.nombre}</p>}
             </>
           )}
           <label htmlFor="correo-cuenta">Correo electrónico</label>
@@ -96,7 +99,10 @@ export default function Acceso({ alIniciar }) {
             placeholder="correo@ejemplo.com"
             value={formulario.correo}
             onChange={manejarCambio}
+            aria-invalid={Boolean(errores.correo)}
+            className={errores.correo ? "campo-invalido" : ""}
           />
+          {errores.correo && <p className="error-campo">{errores.correo}</p>}
           <label htmlFor="contrasena-cuenta">Contraseña</label>
           <input
             id="contrasena-cuenta"
@@ -105,15 +111,20 @@ export default function Acceso({ alIniciar }) {
             placeholder="Mínimo 6 caracteres"
             value={formulario.contrasena}
             onChange={manejarCambio}
+            aria-invalid={Boolean(errores.contrasena)}
+            className={errores.contrasena ? "campo-invalido" : ""}
           />
-          {error && <p className="mensaje error">{error}</p>}
+          {errores.contrasena && <p className="error-campo">{errores.contrasena}</p>}
+          {errorGeneral && <p className="mensaje error">{errorGeneral}</p>}
           <button className="boton-enviar" type="submit">
             {modo === "registro" ? "Crear cuenta" : "Entrar"}
           </button>
         </form>
         <p className="nota-seguridad">
           Nota: por ahora las cuentas se guardan en el navegador
-          (localStorage) como simulación. La seguridad completa (almacenamiento seguro de contraseñas mediante hash y validación en el servidor) está programada para el Sprint 3.
+          (localStorage) como simulación. El almacenamiento seguro de contraseñas
+          mediante hash y la validación en el servidor quedan como mejora futura,
+          fuera del alcance de este proyecto académico.
         </p>
       </div>
     </section>
