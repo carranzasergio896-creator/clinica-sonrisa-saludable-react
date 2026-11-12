@@ -23,6 +23,7 @@ Autor: Sergio Carranza
 
 - `src/components/`: componentes de la interfaz (Header, Hero, Servicios, Dentistas, FormularioCita, Acceso, PanelPaciente, Contacto, Footer y horarios).
 - `src/utils/almacenamiento.js`: capa de persistencia local con localStorage, que funciona como sustituto provisional de la API.
+- `src/utils/validaciones.js`: validadores compartidos de los formularios de citas y acceso.
 
 ## Avance por sprint
 
@@ -30,8 +31,8 @@ Autor: Sergio Carranza
 |---|---|---|
 | Sprint 1 | 5 al 16 de octubre | Terminado |
 | Sprint 2 | 19 al 30 de octubre | En proceso |
-| Sprint 3 | 2 al 13 de noviembre | Planeado: API, administración de citas y seguridad |
+| Sprint Final | 2 al 13 de noviembre | Terminado: validación por campo en formularios, diseño responsivo probado en 375 px y actualización de esta documentación |
 
 ## Aviso
 
-Los datos se guardan solo en el navegador (localStorage) y las contraseñas no están cifradas. Usa únicamente datos ficticios. La API y la autenticación segura se desarrollarán en el Sprint 3.
+Los datos se guardan solo en el navegador (localStorage) y las contraseñas no están cifradas. Usa únicamente datos ficticios. La API y la autenticación del lado del servidor (contraseñas con hash y validación en servidor) quedan como mejora futura, fuera del alcance de este proyecto académico.
