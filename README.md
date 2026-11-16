@@ -12,6 +12,7 @@ Autor: Sergio Carranza
 - Horarios ocupados ocultos al elegir dentista y fecha.
 - Registro e inicio de sesión (simulación local).
 - Panel del paciente para consultar y cancelar citas.
+- Botón **Menú** del proyecto (entrega final) con: actividades realizadas en el curso, sistema implementado, código fuente comprimido (ZIP) y reporte de las modificaciones.
 
 ## Cómo ejecutar
 
@@ -21,7 +22,8 @@ Autor: Sergio Carranza
 
 ## Estructura
 
-- `src/components/`: componentes de la interfaz (Header, Hero, Servicios, Dentistas, FormularioCita, Acceso, PanelPaciente, Contacto, Footer y horarios).
+- `src/components/`: componentes de la interfaz (Header, Hero, Servicios, Dentistas, FormularioCita, Acceso, PanelPaciente, Contacto, Footer, horarios, MenuProyecto y EntregaFinal).
+- `src/data/entregaFinal.js`: contenido del menú del proyecto (actividades, modificaciones y enlaces de descarga).
 - `src/utils/almacenamiento.js`: capa de persistencia local con localStorage, que funciona como sustituto provisional de la API.
 - `src/utils/validaciones.js`: validadores compartidos de los formularios de citas y acceso.
 
@@ -32,6 +34,11 @@ Autor: Sergio Carranza
 | Sprint 1 | 5 al 16 de octubre | Terminado |
 | Sprint 2 | 19 al 30 de octubre | En proceso |
 | Sprint Final | 2 al 13 de noviembre | Terminado: validación por campo en formularios, diseño responsivo probado en 375 px y actualización de esta documentación |
+| Entrega final | 16 de noviembre | Terminado: botón de Menú con actividades, sistema, código fuente (ZIP) y reporte de modificaciones |
+
+## Código fuente
+
+Descarga el proyecto comprimido: [main.zip](https://github.com/carranzasergio896-creator/clinica-sonrisa-saludable-react/archive/refs/heads/main.zip)
 
 ## Aviso
 

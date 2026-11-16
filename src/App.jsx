@@ -8,6 +8,7 @@ import Acceso from "./components/Acceso";
 import PanelPaciente from "./components/PanelPaciente";
 import Contacto from "./components/Contacto";
 import Footer from "./components/Footer";
+import EntregaFinal from "./components/EntregaFinal";
 import { leerSesion, cerrarSesion as cerrarSesionStorage } from "./utils/almacenamiento";
 import "./App.css";
 
@@ -15,6 +16,12 @@ export default function App() {
   const [vista, setVista] = useState("inicio");
   const [usuario, setUsuario] = useState(leerSesion());
   const [dentistaInicial, setDentistaInicial] = useState(null);
+  const [seccionEntrega, setSeccionEntrega] = useState("actividades");
+
+  function abrirSeccion(id) {
+    setSeccionEntrega(id);
+    navegar("entrega");
+  }
 
   function navegar(destino, ancla) {
     setVista(destino);
@@ -46,7 +53,13 @@ export default function App() {
 
   return (
     <>
-      <Header vista={vista} navegar={navegar} usuario={usuario} salir={salir} />
+      <Header
+        vista={vista}
+        navegar={navegar}
+        usuario={usuario}
+        salir={salir}
+        abrirSeccion={abrirSeccion}
+      />
       {vista === "inicio" && (
         <>
           <Hero navegar={navegar} />
@@ -60,6 +73,13 @@ export default function App() {
       )}
       {vista === "acceso" && <Acceso alIniciar={alIniciar} />}
       {vista === "panel" && <PanelPaciente usuario={usuario} navegar={navegar} pedirCita={pedirCita} />}
+      {vista === "entrega" && (
+        <EntregaFinal
+          seccion={seccionEntrega}
+          cambiarSeccion={setSeccionEntrega}
+          navegar={navegar}
+        />
+      )}
       <Footer />
     </>
   );

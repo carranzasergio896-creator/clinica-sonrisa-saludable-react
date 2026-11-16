@@ -1,4 +1,6 @@
-export default function Header({ vista, navegar, usuario, salir }) {
+import MenuProyecto from "./MenuProyecto";
+
+export default function Header({ vista, navegar, usuario, salir, abrirSeccion }) {
   return (
     <header className="encabezado">
       <nav className="navegacion">
@@ -47,6 +49,7 @@ export default function Header({ vista, navegar, usuario, salir }) {
               Iniciar sesión
             </button>
           )}
+          <MenuProyecto abrirSeccion={abrirSeccion} />
         </div>
       </nav>
     </header>
